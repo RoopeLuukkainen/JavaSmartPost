@@ -37,13 +37,6 @@ public class dbHandler {
     private dbHandler() {
         tempList = new ArrayList();
         
-        try {
-            conn.setAutoCommit(false);
-            
-        } catch (SQLException ex) {
-            System.err.println("Failed to set autocommit to false.");
-        }
-        
         String sDriverName = "org.sqlite.JDBC";
         try {
             Class.forName(sDriverName);
@@ -92,6 +85,7 @@ public class dbHandler {
         
         try {
             conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
             
             query = conn.prepareStatement("INSERT INTO smartPost"
                     + "('smartPostName', 'openingTime', 'closingTime', "
@@ -110,16 +104,19 @@ public class dbHandler {
             query.execute();
 
             conn.commit();
-            CloseDB();
-            
+                        
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
             try {
                 conn.rollback();
                 System.err.println("Transaction is rolled back!");
+                
             } catch (SQLException ex1) {                
                 System.err.println(ex1.getMessage());
             }
+            
+        } finally {
+            CloseDB();
         }
     }
     
@@ -129,12 +126,17 @@ public class dbHandler {
         
         try {
             conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
+            
             if (attr2 != null) {
-                attr2 = ", " + attr2;
+                query = conn.prepareStatement("SELECT " + attr + ", " + attr2 + 
+                                                " FROM " + table + "");
+            } else {
+                query = conn.prepareStatement("SELECT " + attr + 
+                                                " FROM " + table + "");
             }
             
-            query = conn.prepareStatement("SELECT "+ attr + attr2 + 
-                                            " FROM "+ table +"");
+            
             
             rs = query.executeQuery();
                 while (rs.next()) {
@@ -142,9 +144,7 @@ public class dbHandler {
                 }
                 
             conn.commit();
-            CloseDB();
             
-                    
         } catch (SQLException ex) {
             Logger.getLogger(dbHandler.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Read error 1");
@@ -153,6 +153,9 @@ public class dbHandler {
                 System.err.println("Transaction is rolled back!");
             } catch (SQLException ex1) {                
                 System.err.println(ex1.getMessage());
+            
+            } finally {
+                CloseDB();
             }
         }
         
