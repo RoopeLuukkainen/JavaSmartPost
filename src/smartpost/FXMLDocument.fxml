@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.web.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="smartpost.FXMLDocumentController">
+   <children>
+      <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="150.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="100.0" prefHeight="294.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="150.0" minHeight="150.0" prefHeight="150.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <MenuBar maxHeight="30.0" minHeight="30.0" minWidth="150.0" prefHeight="30.0">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Close" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                  <items>
+                    <MenuItem fx:id="loadXML" mnemonicParsing="false" onAction="#loadXMLaction" text="loadXML" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="About" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <AnchorPane minHeight="100.0" minWidth="150.0" GridPane.rowIndex="1">
+               <children>
+                  <TabPane layoutX="2.0" prefHeight="414.0" prefWidth="594.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <tabs>
+                        <Tab text="WEBVIEW">
+                           <content>
+                              <AnchorPane>
+                                 <children>
+                                    <WebView fx:id="webViewScreen" maxHeight="-1.0" maxWidth="-1.0" minHeight="69.0" minWidth="86.0" prefHeight="381.0" prefWidth="594.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="2.0" />
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </Tab>
+                        <Tab text="LOKI">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <AnchorPane layoutX="39.0" layoutY="55.0" prefHeight="381.0" prefWidth="594.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
+                     </tabs>
+                  </TabPane>
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
+               <children>
+                  <GridPane layoutX="161.0" layoutY="-7.0" prefHeight="83.0" prefWidth="594.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="275.0" percentWidth="50.0" prefWidth="275.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" percentHeight="100.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <ComboBox fx:id="smartPostCombo" layoutX="14.0" layoutY="26.0" prefHeight="25.0" prefWidth="255.0" />
+                              <Label layoutX="14.0" layoutY="5.0" text="Lisää SmartPost automaatit kartalle:">
+                                 <font>
+                                    <Font name="Times New Roman Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Button fx:id="addSmartPostButton" layoutX="14.0" layoutY="54.0" mnemonicParsing="false" onAction="#addSmartPostAction" text="Lisää kartalle" />
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
+                           <children>
+                              <Label layoutX="10.0" layoutY="5.0" text="Pakettien luonti ja lähetys:">
+                                 <font>
+                                    <Font name="Times New Roman Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Button fx:id="createPackageButton" layoutX="10.0" layoutY="25.0" mnemonicParsing="false" onAction="#startPackageCreator" prefHeight="25.0" prefWidth="147.0" text="Luo paketti" />
+                              <Button layoutX="10.0" layoutY="85.0" mnemonicParsing="false" text="Poista reitit kartalta" />
+                              <Button layoutX="10.0" layoutY="55.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="147.0" text="Lähetä paketti" />
+                              <ComboBox layoutX="165.0" layoutY="25.0" prefHeight="85.0" prefWidth="126.0" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </GridPane>
+               </children>
+            </AnchorPane>
+         </children>
+      </GridPane>
+      <Pane fx:id="startPane" blendMode="DARKEN" prefHeight="390.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane prefHeight="451.0" prefWidth="604.0">
+               <children>
+                  <Button fx:id="startNoButton" layoutX="218.0" layoutY="241.0" mnemonicParsing="false" onAction="#noContinueAction" prefHeight="50.0" prefWidth="100.0" text="Ei" AnchorPane.rightAnchor="110.0" AnchorPane.topAnchor="200.0" />
+                  <Button fx:id="startYesButton" layoutX="112.0" layoutY="214.0" mnemonicParsing="false" onAction="#continueAction" prefHeight="50.0" prefWidth="100.0" text="Kyllä" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="200.0" />
+                  <ProgressBar fx:id="startProgressBar" layoutX="20.0" layoutY="341.0" prefHeight="85.0" prefWidth="568.0" progress="0.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" />
+                  <Label alignment="TOP_CENTER" layoutX="12.0" layoutY="151.0" maxHeight="30.0" minHeight="30.0" minWidth="-Infinity" prefHeight="30.0" prefWidth="405.0" text="Jatketaanko edellisestä istunnosta?" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+                     <font>
+                        <Font name="Times New Roman Bold" size="25.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
