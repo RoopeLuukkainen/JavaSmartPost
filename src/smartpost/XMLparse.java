@@ -61,7 +61,7 @@ public class XMLparse {
             Node node = nodes.item(i);
             Element e = (Element)node;
             
-            city = getValue("city", e);
+            city = getValue("city", e).toUpperCase();
             
             dbh.writeSmartPostTodb(getValue("postoffice", e), getValue("availability", e),
             getValue("address", e), getValue("code", e),city ,

@@ -27,6 +27,7 @@ public class dbHandler {
     static private dbHandler dbh = null;
     
     private ArrayList tempList = null;
+    private Object[] tempArray;
     
     private final String protocol = "jdbc:sqlite:", dbName = "harkkakanta.db";
     
@@ -36,6 +37,7 @@ public class dbHandler {
     
     private dbHandler() {
         tempList = new ArrayList();
+        tempArray = new String[3];
         
         String sDriverName = "org.sqlite.JDBC";
         try {
@@ -121,28 +123,48 @@ public class dbHandler {
     }
     
     
-    public ArrayList readFromdb(String table, String attr, String attr2) {
-    /* Read given attributes from given table. Returns ArrayList of values */
+    public ArrayList readFromdb(String table, String attr, String attr2, String attr3, String whereTerm) {
+    /* Read given attributes from given table. Returns ArrayList of values if 
+        there is multiple attributes given each row is as array in ArrayList. */
         
         try {
             conn = DriverManager.getConnection(protocol + dbName);
             conn.setAutoCommit(false);
+            tempList.clear();
             
-            if (attr2 != null) {
-                query = conn.prepareStatement("SELECT " + attr + ", " + attr2 + 
-                                                " FROM " + table + "");
+            String queryS = "";
+            if (!attr3.equals("")) {
+                queryS = String.format("SELECT %s, %s, %s FROM %s", attr, attr2, attr3, table);
+            
+            } else if (!attr2.equals("")) {
+                queryS = String.format("SELECT %s, %s FROM %s", attr, attr2, table);
+            
             } else {
-                query = conn.prepareStatement("SELECT " + attr + 
-                                                " FROM " + table + "");
+                queryS = String.format("SELECT %s FROM %s", attr, table);
+            }
+
+            if (!whereTerm.equals("")) {
+                queryS += (" WHERE " + whereTerm);
+            }
+            System.out.println(queryS);
+            query = conn.prepareStatement(queryS);
+            
+            rs = query.executeQuery();
+            if (attr2.equals("")) {
+                while (rs.next()) {
+                    tempList.add(rs.getObject(attr));
+                }
+            
+            } else {
+                while (rs.next()) {
+                    tempArray[0] = rs.getObject(attr);
+                    tempArray[1] = rs.getObject(attr2);
+                    System.out.println(tempArray[0] + " " + tempArray[1]);
+                    tempList.add(tempArray.clone());
+                }
             }
             
             
-            
-            rs = query.executeQuery();
-                while (rs.next()) {
-                    tempList.add(rs.getString(attr));
-                }
-                
             conn.commit();
             
         } catch (SQLException ex) {
@@ -155,16 +177,20 @@ public class dbHandler {
                 System.err.println(ex1.getMessage());
             
             } finally {
+                tempArray = null;
                 CloseDB();
+                 
             }
         }
-        
-        return tempList;       
+        return tempList; 
+    }
+    
+    public void addItemToDB(String N, int S, int W, boolean B) {
     }
     
     public void CloseDB() {
         try {
-            if (!(rs == null) || rs.isClosed())
+            if (!(rs == null) || !(rs.isClosed()))
                 rs.close();
             
             if (!query.isClosed())

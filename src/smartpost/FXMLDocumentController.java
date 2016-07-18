@@ -40,6 +40,8 @@ public class FXMLDocumentController implements Initializable {
     XMLparse xml = new XMLparse();
     dbHandler dbh;
     private ArrayList tempList = new ArrayList();
+
+    private String tempS = "";
     
     private Label label;
     @FXML
@@ -91,9 +93,36 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void addSmartPostAction(ActionEvent event) {        
-            //webViewScreen.getEngine().executeScript("document.goToLocation('Skinnarilankatu 34, 53850 Lappeenranta', 'Aukioloaika', 'red')");
-            dbh = getDbh();
-            tempList = dbh.readFromdb("smartPost", "streetAddress", "postalCode");
+        //webViewScreen.getEngine().executeScript("document.goToLocation('Skinnarilankatu 34, 53850 Lappeenranta', 'Aukioloaika', 'red')");
+        tempS = "city = '" + smartPostCombo.valueProperty().getValue().toUpperCase() + "'";
+        
+        dbh = getDbh();
+        tempList = dbh.readFromdb("smartPost", "streetAddress", "postalCode", "", tempS);
+//
+//        if (tempList.size() > 11) {
+//            tempList.subList(0, 10)
+//        }
+        int i = 0;
+        for (Object o : tempList) {
+            String[] list = (String[]) o;
+            
+//            System.out.println(i++);
+//
+//            try {
+//
+//                Thread.sleep(500);
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+            
+
+            String script = String.format("document.goToLocation('%s, %s %s', "
+                    + "'Aukioloaika', 'red')", list[0], list[1], smartPostCombo.valueProperty().getValue());
+            webViewScreen.getEngine().executeScript(script);
+        }
+        
+        
+        
     }
 
     @FXML
@@ -153,7 +182,7 @@ public class FXMLDocumentController implements Initializable {
     
     private void addCityToCombo() {
         dbh = getDbh();
-        tempList = dbh.readFromdb("smartPost", "city", null);
+        tempList = dbh.readFromdb("smartPost", "city", "", "", "");
         
         for (Object o : tempList) {
             String s = o.toString().substring(0, 1).toUpperCase()

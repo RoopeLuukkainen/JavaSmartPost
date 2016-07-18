@@ -11,7 +11,7 @@
 <script type="text/javascript">
   var polyMarkerArray = [];
   function initialize() {
-    var latlng = new google.maps.LatLng(63.9667, 25.7667);
+    var latlng = new google.maps.LatLng(62.018035, 25.590373);//(63.9667, 25.7667);
     var myOptions = {
       zoom: 6,
       center: latlng,
@@ -43,7 +43,7 @@
   document.goToLocation = function goToLocation(searchString, infoString, color) {
     document.geocoder.geocode( {'address': searchString}, function(results, status) {
       if (status === google.maps.GeocoderStatus.OK) {
-        var icon = 'http://maps.google.com/mapfiles/ms/icons/' + color + '-dot.png';
+        var icon = 'http://maps.google.com/mapfiles/ms/icons/' + color + '-dot.png';//'https://pin.net.au/open-graph-image.png'; 
         var marker = new google.maps.Marker({
           map: document.map,
           position: results[0].geometry.location,
