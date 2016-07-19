@@ -10,8 +10,10 @@
 </script>
 <script type="text/javascript">
   var polyMarkerArray = [];
+  var markers = [];
   function initialize() {
     var latlng = new google.maps.LatLng(62.018035, 25.590373);//(63.9667, 25.7667);
+
     var myOptions = {
       zoom: 6,
       center: latlng,
@@ -44,11 +46,13 @@
     document.geocoder.geocode( {'address': searchString}, function(results, status) {
       if (status === google.maps.GeocoderStatus.OK) {
         var icon = 'http://maps.google.com/mapfiles/ms/icons/' + color + '-dot.png';//'https://pin.net.au/open-graph-image.png'; 
-        var marker = new google.maps.Marker({
+        var marker = new google.maps.Marker({            
           map: document.map,
           position: results[0].geometry.location,
           icon: icon
         });
+        markers.push(marker);
+        
         var info = new google.maps.InfoWindow({
           content: infoString
         });
@@ -61,7 +65,14 @@
         alert("Geocode was not successful for the following reason: " + status);
       }
     });
-  }
+  };
+
+  document.deleteMarkers = function deleteMarkers() {
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
+
+  };
 
   document.createPath = function createPath(pathArray, pathColor, speed) {
     var src = new google.maps.LatLng(pathArray[0], pathArray[1]);

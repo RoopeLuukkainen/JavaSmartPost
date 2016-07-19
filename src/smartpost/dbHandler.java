@@ -37,7 +37,7 @@ public class dbHandler {
     
     private dbHandler() {
         tempList = new ArrayList();
-        tempArray = new String[3];
+        tempArray = new String[6];
         
         String sDriverName = "org.sqlite.JDBC";
         try {
@@ -122,8 +122,40 @@ public class dbHandler {
         }
     }
     
+    public void addItemToDB(String N, double S, int W, boolean B) {
+        try {
+            conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
+
+            query = conn.prepareStatement("INSERT INTO item"
+                    + "('itemName', 'itemSize', 'itemWeight', 'breakable')"
+                    + "VALUES (?, ?, ?, ?)");
+
+            query.setString(1, N);
+            query.setDouble(2, S);
+            query.setInt(3, W);
+            query.setBoolean(4, B);
+
+            query.execute();
+
+            conn.commit();
+
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+            try {
+                conn.rollback();
+                System.err.println("Add item transaction is rolled back!");
+
+            } catch (SQLException ex1) {                
+                System.err.println(ex1.getMessage());
+            }
+
+        } finally {
+            CloseDB();
+        }
+    }
     
-    public ArrayList readFromdb(String table, String attr, String attr2, String attr3, String whereTerm) {
+    public ArrayList readFromdb(String table, ArrayList<String> attrList, String whereTerm) { //String attr, String attr2, String attr3
     /* Read given attributes from given table. Returns ArrayList of values if 
         there is multiple attributes given each row is as array in ArrayList. */
         
@@ -132,33 +164,41 @@ public class dbHandler {
             conn.setAutoCommit(false);
             tempList.clear();
             
-            String queryS = "";
-            if (!attr3.equals("")) {
-                queryS = String.format("SELECT %s, %s, %s FROM %s", attr, attr2, attr3, table);
+            String attr = attrList.get(0);
+            String queryS = "SELECT " + attr;
+            attrList.remove(0); // removing first attr makes query building easier.
             
-            } else if (!attr2.equals("")) {
-                queryS = String.format("SELECT %s, %s FROM %s", attr, attr2, table);
-            
-            } else {
-                queryS = String.format("SELECT %s FROM %s", attr, table);
+            if (!attrList.isEmpty()) {
+                for (String attribute : attrList) {
+                    queryS += String.format(", %s", attribute);
+                }
             }
+            queryS += String.format("FROM %s", table);
+            
 
             if (!whereTerm.equals("")) {
                 queryS += (" WHERE " + whereTerm);
             }
+            
             System.out.println(queryS);
             query = conn.prepareStatement(queryS);
             
             rs = query.executeQuery();
-            if (attr2.equals("")) {
+            
+            if (attrList.isEmpty()) {
                 while (rs.next()) {
                     tempList.add(rs.getObject(attr));
                 }
             
             } else {
+                int i = 0;
+                attrList.add(attr); //Adding attr back makes Array handling easier.                
                 while (rs.next()) {
-                    tempArray[0] = rs.getObject(attr);
-                    tempArray[1] = rs.getObject(attr2);
+                    i = 0;
+                    for (String S : attrList) {
+                        tempArray[i] = rs.getObject(attrList.get(i++));
+                    }
+                    
                     System.out.println(tempArray[0] + " " + tempArray[1]);
                     tempList.add(tempArray.clone());
                 }
@@ -166,13 +206,14 @@ public class dbHandler {
             
             
             conn.commit();
+            attrList.clear();
             
         } catch (SQLException ex) {
             Logger.getLogger(dbHandler.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Read error 1");
+            System.out.println("DB reading error.");
             try {
                 conn.rollback();
-                System.err.println("Transaction is rolled back!");
+                System.err.println("Reading from DB transaction is rolled back!");
             } catch (SQLException ex1) {                
                 System.err.println(ex1.getMessage());
             
@@ -183,9 +224,6 @@ public class dbHandler {
             }
         }
         return tempList; 
-    }
-    
-    public void addItemToDB(String N, int S, int W, boolean B) {
     }
     
     public void CloseDB() {
