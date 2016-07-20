@@ -8,16 +8,21 @@ package smartpost;
 
 import java.io.IOException;
 import java.io.StringReader;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javafx.scene.control.ComboBox;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -27,7 +32,7 @@ import org.xml.sax.SAXException;
  */
 public class XMLparse {
     private Document doc;
-    private String city = null;
+    private String city, code;
 
     public XMLparse() {}
     
@@ -62,16 +67,21 @@ public class XMLparse {
             Element e = (Element)node;
             
             city = getValue("city", e).toUpperCase();
+            code = getValue("code", e);
             
-            dbh.writeSmartPostTodb(getValue("postoffice", e), getValue("availability", e),
-            getValue("address", e), getValue("code", e),city ,
-            getValue("lat", e), getValue("lng", e));
+            dbh.writeCityTodb(code, city);
             
-            Combo = FXMLDocumentController.getSmartPostCombo();
+            dbh.writeSmartPostTodb(
+                    getValue("postoffice", e), getValue("availability", e), 
+                    getValue("address", e),code ,
+                    getValue("lat", e), getValue("lng", e)
+            );
             
-            if (!(Combo.getItems().contains(city.toUpperCase()))) {
-                    Combo.getItems().add(city.toUpperCase());
-            }
+//            Combo = FXMLDocumentController.getSmartPostCombo();
+//            
+//            if (!(Combo.getItems().contains(city.toUpperCase()))) {
+//                    Combo.getItems().add(city.toUpperCase());
+//            }
             
 //            System.out.printf("%s %s\n"
 //                    + "%s %s %s\n"

@@ -70,14 +70,7 @@ public class PackageCreatorFXMLController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        dbh = getDbh();
-        attrList.addAll(Arrays.asList("itemID", "itemName", "itemSize", "itemWeight", "breakable"));
-        itemList = dbh.readFromdb("item", attrList, "");
-        
-        for (Object o : itemList) {
-            String[] list = (String[]) o;
-            itemCombo.getItems().add(new Item(list[0], list[1], list[2], list[3], list[4]));
-        } ////// KORJAAAAAA !!!!!!!!!!!!!!!
+        createItemObject();
     }    
 
     @FXML
@@ -98,12 +91,26 @@ public class PackageCreatorFXMLController implements Initializable {
         
         dbh = getDbh();
         dbh.addItemToDB(itemName, itemSize, itemWeight, breakable);
+       
+//        attrList.add("itemID");
+//         = dbh.readFromdb("item", attrList,"");
+//        int itemID;
         
-        itemCombo.getItems().add(new Item(itemName, itemSize, itemWeight, breakable));
+//        itemCombo.getItems().add(new Item(itemName, itemSize, itemWeight, breakable));
     }
     
     private void createItemObject() {
-        itemCombo.getItems().addAll(itemList);
+        dbh = getDbh();
+        attrList.addAll(Arrays.asList("itemID", "itemName", "itemSize", "itemWeight", "breakable"));
+        itemList = dbh.readFromdb("item", attrList, null);
+        
+        attrList.clear();
+        
+        for (Object o : itemList) {
+            String[] list = (String[]) o;
+            itemCombo.getItems().add(new Item(Integer.parseInt(list[0]), list[1],
+                    Double.parseDouble(list[2]), Integer.parseInt(list[3]), Boolean.getBoolean(list[4])));
+        }
     }
 
     @FXML

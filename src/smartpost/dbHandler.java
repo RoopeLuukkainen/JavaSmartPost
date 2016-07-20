@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package smartpost;
 
 import java.sql.Connection;
@@ -24,39 +23,40 @@ import java.util.logging.Logger;
  * @author k9751
  */
 public class dbHandler {
+
     static private dbHandler dbh = null;
-    
+
     private ArrayList tempList = null;
     private Object[] tempArray;
-    
+
     private final String protocol = "jdbc:sqlite:", dbName = "harkkakanta.db";
-    
+
     Connection conn = null;
     PreparedStatement query;
     ResultSet rs = null;
-    
+
     private dbHandler() {
         tempList = new ArrayList();
         tempArray = new String[6];
-        
+
         String sDriverName = "org.sqlite.JDBC";
         try {
             Class.forName(sDriverName);
-            
+
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(dbHandler.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("ClassNotFound EXCEPTION!!!!");
-        
-        } 
-        
-        
+
+        }
+
     }
-    
+
     static public dbHandler getInstance() {
-    /* Returns instance to dbHandler object. Uses singleton design pattern */
-        
-        if (dbh == null)
+        /* Returns instance to dbHandler object. Uses singleton design pattern */
+
+        if (dbh == null) {
             dbh = new dbHandler();
+        }
         return dbh;
     }
 
@@ -81,47 +81,76 @@ public class dbHandler {
 //        } 
 //    }
     
-    void writeSmartPostTodb(String postOffice, String avaibility, String address,
-                      String postalCode, String city, String lat, String lng) {
-        /* Adds all SmartPosts to database table "smartPost" */
-        
+    public void writeCityTodb(String pcode, String city) {
         try {
             conn = DriverManager.getConnection(protocol + dbName);
             conn.setAutoCommit(false);
-            
-            query = conn.prepareStatement("INSERT INTO smartPost"
-                    + "('smartPostName', 'openingTime', 'closingTime', "
-                    + "'streetAddress', 'postalCode', 'city', 'latitude', 'longitude')"
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            
-            query.setString(1, postOffice);
-            query.setString(2, avaibility);// MUUUUTAAA
-            query.setString(3, avaibility);// TO DATE MUOTOON!!
-            query.setString(4, address);
-            query.setString(5, postalCode);
-            query.setString(6, city);
-            query.setFloat(7, Float.parseFloat(lat));
-            query.setFloat(8, Float.parseFloat(lng));
-            
+
+            query = conn.prepareStatement("INSERT INTO city" +
+                    "('postalCode', 'cityName')"+ "VALUES (?, ?)");
+
+            query.setString(1, pcode);
+            query.setString(2, city);
+
             query.execute();
 
             conn.commit();
-                        
+
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
             try {
                 conn.rollback();
-                System.err.println("Transaction is rolled back!");
-                
-            } catch (SQLException ex1) {                
+                System.err.println("Adding city transaction is rolled back!");
+
+            } catch (SQLException ex1) {
                 System.err.println(ex1.getMessage());
             }
-            
+
         } finally {
             CloseDB();
         }
     }
     
+    public void writeSmartPostTodb(String postOffice, String avaibility, String address,
+            String postalCode, String lat, String lng) {
+        /* Adds all SmartPosts to database table "smartPost" */
+
+        try {
+            conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
+
+            query = conn.prepareStatement("INSERT INTO smartPost"
+                    + "('smartPostName', 'openingTime', 'closingTime', "
+                    + "'streetAddress', 'postalCode', 'latitude', 'longitude')"
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+            query.setString(1, postOffice);
+            query.setString(2, avaibility);// MUUUUTAAA
+            query.setString(3, avaibility);// TO DATE MUOTOON!!
+            query.setString(4, address);
+            query.setString(5, postalCode);
+            query.setFloat(6, Float.parseFloat(lat));
+            query.setFloat(7, Float.parseFloat(lng));
+
+            query.execute();
+
+            conn.commit();
+
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+            try {
+                conn.rollback();
+                System.err.println("Adding SmartPost transaction is rolled back!");
+
+            } catch (SQLException ex1) {
+                System.err.println(ex1.getMessage());
+            }
+
+        } finally {
+            CloseDB();
+        }
+    }
+
     public void addItemToDB(String N, double S, int W, boolean B) {
         try {
             conn = DriverManager.getConnection(protocol + dbName);
@@ -146,7 +175,7 @@ public class dbHandler {
                 conn.rollback();
                 System.err.println("Add item transaction is rolled back!");
 
-            } catch (SQLException ex1) {                
+            } catch (SQLException ex1) {
                 System.err.println(ex1.getMessage());
             }
 
@@ -154,42 +183,48 @@ public class dbHandler {
             CloseDB();
         }
     }
-    
-    public ArrayList readFromdb(String table, ArrayList<String> attrList, String whereTerm) { //String attr, String attr2, String attr3
+
+    public ArrayList readFromdb(String table, ArrayList<String> attrList, ArrayList additionalTerms) {
     /* Read given attributes from given table. Returns ArrayList of values if 
         there is multiple attributes given each row is as array in ArrayList. */
-        
+
         try {
             conn = DriverManager.getConnection(protocol + dbName);
             conn.setAutoCommit(false);
             tempList.clear();
-            
+
             String attr = attrList.get(0);
             String queryS = "SELECT " + attr;
             attrList.remove(0); // removing first attr makes query building easier.
-            
+
             if (!attrList.isEmpty()) {
                 for (String attribute : attrList) {
                     queryS += String.format(", %s", attribute);
                 }
             }
-            queryS += String.format("FROM %s", table);
-            
+            queryS += String.format(" FROM %s", table);
 
-            if (!whereTerm.equals("")) {
-                queryS += (" WHERE " + whereTerm);
+                                                            System.out.println(queryS);
+            if (additionalTerms != null) {
+                queryS += additionalTerms.get(0);  
+                                                            System.out.println(queryS);
+                query = conn.prepareStatement(queryS);
+//                query.setObject(1, additionalTerms.get(1));
+                                                            System.out.println("IF: " + queryS);
+
+            } else {              
+                query = conn.prepareStatement(queryS);  
+                                                            System.out.println("ELSE: " +queryS);
             }
-            
-            System.out.println(queryS);
-            query = conn.prepareStatement(queryS);
-            
+
             rs = query.executeQuery();
-            
+
             if (attrList.isEmpty()) {
                 while (rs.next()) {
                     tempList.add(rs.getObject(attr));
+                                                            //System.out.println(rs.getObject(attr));
                 }
-            
+
             } else {
                 int i = 0;
                 attrList.add(attr); //Adding attr back makes Array handling easier.                
@@ -198,48 +233,75 @@ public class dbHandler {
                     for (String S : attrList) {
                         tempArray[i] = rs.getObject(attrList.get(i++));
                     }
-                    
-                    System.out.println(tempArray[0] + " " + tempArray[1]);
+                                                            //System.out.println(tempArray[0] + " " + tempArray[1]);
                     tempList.add(tempArray.clone());
                 }
             }
-            
-            
+
             conn.commit();
             attrList.clear();
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(dbHandler.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("DB reading error.");
             try {
                 conn.rollback();
                 System.err.println("Reading from DB transaction is rolled back!");
-            } catch (SQLException ex1) {                
+            } catch (SQLException ex1) {
                 System.err.println(ex1.getMessage());
-            
+
             } finally {
                 tempArray = null;
                 CloseDB();
-                 
+
             }
         }
-        return tempList; 
+        return tempList;
     }
-    
+
     public void CloseDB() {
         try {
-            if (!(rs == null) || !(rs.isClosed()))
-                rs.close();
-            
-            if (!query.isClosed())
-                    query.close();
+            if (!(rs == null)) {
+                if (!rs.isClosed()) {
+                    rs.close();
+                }
+            }
 
-            if (!conn.isClosed())
+            if (!query.isClosed()) {
+                query.close();
+            }
+
+            if (!conn.isClosed()) {
                 conn.close();
+            }
 
-                        
         } catch (SQLException ex) {
             Logger.getLogger(dbHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    void clearDB() {
+        try {
+            conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
+            
+            DatabaseMetaData metaData = conn.getMetaData();
+            rs = metaData.getTables(null, null, "%", null);
+            while (rs.next()) {
+                System.out.println(rs.getString(3));
+                query = conn.prepareStatement("DELETE FROM " + rs.getString(3) + ";");
+                
+                query.execute();
+                query.close();
+            }
+            
+            rs.close();
+            
+            conn.commit();
+            conn.close();
+            
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
         }
     }
 }

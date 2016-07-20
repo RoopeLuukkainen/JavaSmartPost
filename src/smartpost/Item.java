@@ -12,8 +12,8 @@ package smartpost;
  */
 public class Item {
     private String name;
-    private double size; // unit cm³
-    private int ID, weight; // unit g
+    private double size; // size unit cm³
+    private int packageID, ID, weight; // weigth unit g
     private boolean breakable;  
     
     public Item(int ID, String N, double S, int W, boolean B) {
@@ -22,6 +22,7 @@ public class Item {
         weight = W;
         size = S;
         breakable = B;
+        System.out.printf("%d, %s, %f, %d, %b", ID, name, (float)S, W, B);
     }
     
     @Override
