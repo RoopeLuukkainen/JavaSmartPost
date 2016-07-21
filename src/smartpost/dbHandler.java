@@ -284,8 +284,13 @@ public class dbHandler {
             
             DatabaseMetaData metaData = conn.getMetaData();
             rs = metaData.getTables(null, null, "%", null);
+            
+            String table = null;
             while (rs.next()) {
-                System.out.println(rs.getString(3));
+                table = rs.getString(3);
+                System.out.println(table);
+                if (table.contains("View"))
+                    continue;
                 query = conn.prepareStatement("DELETE FROM " + rs.getString(3) + ";");
                 
                 query.execute();
