@@ -49,7 +49,7 @@ public class FXMLDocumentController implements Initializable {
     private ArrayList<ArrayList> tempList = new ArrayList<>();
     private ArrayList additionalTermList = new ArrayList();
     private ArrayList<String> attrList = new ArrayList<>();
-    private ArrayList<String> cityList = new ArrayList<>();
+    private static ArrayList<String> cityList = new ArrayList<>();
 
     private FadeTransition fadeIn = new FadeTransition(Duration.millis(500));
 
@@ -108,6 +108,7 @@ public class FXMLDocumentController implements Initializable {
             packageCreator.show();
 
         } catch (IOException ex) {
+            System.out.println("errori paketin avaamisessa.");
             Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -206,8 +207,8 @@ public class FXMLDocumentController implements Initializable {
     private void addCityToCombo() {
         attrList.add("cityName");
         cityList = dbh.readFromdb("city", attrList, null);
+        attrList.clear();
 
-        attrList.clear();        
 
         Collections.sort(cityList);
         
@@ -221,12 +222,13 @@ public class FXMLDocumentController implements Initializable {
                 smartPostCombo.getItems().add(s);
             }
         }
-        cityList.clear();
-
     }
 
-    static public ComboBox<String> getSmartPostCombo() {
-        return smartPostCombo;
+    static public ArrayList getCityList() {
+        cityList.clear();
+        cityList.addAll(smartPostCombo.getItems());
+        System.out.println("Main:" + cityList);
+        return cityList;
     }
 
     @FXML

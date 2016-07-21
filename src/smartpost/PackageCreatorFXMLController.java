@@ -17,6 +17,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
@@ -32,6 +34,7 @@ public class PackageCreatorFXMLController implements Initializable {
     private ArrayList<ArrayList> tempList = new ArrayList<>();
     private ArrayList<itemPackage> packageList = new ArrayList<>();
     private ArrayList<String> attrList = new ArrayList<>();
+    private ArrayList<String> additionalTermList = new ArrayList<>();
     
     @FXML
     private Button addItemButton;
@@ -65,13 +68,35 @@ public class PackageCreatorFXMLController implements Initializable {
     private TextField itemHeightField;
     @FXML
     private TextField itemDepthField;
+    @FXML
+    private TableColumn<?, ?> spNameColumn1;
+    @FXML
+    private TableColumn<?, ?> spAddressColumn1;
+    @FXML
+    private TableColumn<?, ?> spNameColumn2;
+    @FXML
+    private TableColumn<?, ?> spAddressColumn2;
+    @FXML
+    private TableView<String> startTable;
+    @FXML
+    private TableView<?> destinationTable;
 
     /**
      * Initializes the controller class.
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        createItemObject();
+    public void initialize(URL url, ResourceBundle rb) {        
+        dbh = getDbh();
+        attrList.addAll(Arrays.asList("itemID", "itemName", "itemSize", "itemWeight", "breakable"));
+        tempList = dbh.readFromdb("item", attrList, null);
+        
+        attrList.clear();
+        
+        for (ArrayList A : tempList) {
+            createItemObject(A);
+        }
+        
+        addCitiesToList();
     }    
 
     @FXML
@@ -93,25 +118,33 @@ public class PackageCreatorFXMLController implements Initializable {
         dbh = getDbh();
         dbh.addItemToDB(itemName, itemSize, itemWeight, breakable);
        
-//        attrList.add("itemID");
-//         = dbh.readFromdb("item", attrList,"");
-//        int itemID;
+        attrList.addAll(Arrays.asList("itemID", "itemName", "itemSize", "itemWeight", "breakable"));
         
-//        itemCombo.getItems().add(new Item(itemName, itemSize, itemWeight, breakable));
+        additionalTermList.addAll(Arrays.asList(
+                " ORDER BY itemID DESC LIMIT ?", "1")); //Used 2 terms because 
+        
+        tempList = dbh.readFromdb("item", attrList, additionalTermList);
+        
+        System.out.println(tempList);
+        System.out.println(tempList.get(0));
+        
+        createItemObject(tempList.get(0));
+        tempList.clear();
+        attrList.clear();
+        additionalTermList.clear();
     }
     
-    private void createItemObject() {
-        dbh = getDbh();
-        attrList.addAll(Arrays.asList("itemID", "itemName", "itemSize", "itemWeight", "breakable"));
-        tempList = dbh.readFromdb("item", attrList, null);
-        
-        attrList.clear();
-        
-        for (ArrayList A : tempList) {
-            itemCombo.getItems().add(new Item((int)(A.get(0)), (String)A.get(1),
-                    (double)A.get(2), (int)A.get(3), (boolean)A.get(4)));
-        }
+    private void createItemObject(ArrayList A) {
+//        System.out.println(A);
+//        System.out.println(Integer.parseInt(A.get(0).toString()) + "|" + (String)A.get(1) + "|" +
+//                Double.parseDouble(A.get(2).toString()) + "|" + Integer.parseInt(A.get(3).toString()) + "|" + Boolean.parseBoolean(A.get(4).toString()));
+
+        itemCombo.getItems().add(new Item(Integer.parseInt(A.get(0).toString()),
+                (String)A.get(1), Double.parseDouble(A.get(2).toString()),
+                Integer.parseInt(A.get(3).toString()),
+                Boolean.parseBoolean(A.get(4).toString())));
     }
+    
 
     @FXML
     private void createPackageAction(ActionEvent event) {
@@ -126,5 +159,15 @@ public class PackageCreatorFXMLController implements Initializable {
     private dbHandler getDbh() {
         dbh = dbHandler.getInstance();
         return dbh;
+    }
+
+    private void addCitiesToList() {
+        startCityCombo.getItems().addAll(FXMLDocumentController.getCityList());
+        destinationCityCombo.getItems().addAll(FXMLDocumentController.getCityList());   
+    }
+
+    @FXML
+    private void refreshTableView(ActionEvent event) {
+        //OPETTELE KÄYTTÄMÄÄN TABLEVIEWIÄ!!!
     }
 }

@@ -203,14 +203,12 @@ public class dbHandler {
             }
             queryS += String.format(" FROM %s", table);
 
-                                                            System.out.println(queryS);
             if (additionalTerms != null) {
                 queryS += additionalTerms.get(0);  
-                                                            System.out.println(queryS);
+                                                            
                 query = conn.prepareStatement(queryS);
                 query.setObject(1, additionalTerms.get(1));
                                                             System.out.println("IF: " + queryS);
-
             } else {              
                 query = conn.prepareStatement(queryS);  
                                                             System.out.println("ELSE: " +queryS);
@@ -233,10 +231,7 @@ public class dbHandler {
                     for (String S : attrList) {
                         innerList.add(i++, rs.getObject(S));
                     }
-                                                           System.out.println("inner:" + innerList);
-                                                           
                     tempList.add(innerList.clone());
-                                                            System.out.println("temp: " + tempList);
                 }
             }
 
