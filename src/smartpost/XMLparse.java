@@ -71,7 +71,7 @@ public class XMLparse {
             
             dbh.writeCityTodb(code, city);
             
-            dbh.writeSmartPostTodb(
+            dbh.addSmartPostTodb(
                     getValue("postoffice", e), getValue("availability", e), 
                     getValue("address", e),code ,
                     getValue("lat", e), getValue("lng", e)

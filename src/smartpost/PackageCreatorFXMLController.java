@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 public class PackageCreatorFXMLController implements Initializable {
     dbHandler dbh;
     private ArrayList<Item> itemList = new ArrayList<>();
+    private ArrayList<ArrayList> tempList = new ArrayList<>();
     private ArrayList<itemPackage> packageList = new ArrayList<>();
     private ArrayList<String> attrList = new ArrayList<>();
     
@@ -102,14 +103,13 @@ public class PackageCreatorFXMLController implements Initializable {
     private void createItemObject() {
         dbh = getDbh();
         attrList.addAll(Arrays.asList("itemID", "itemName", "itemSize", "itemWeight", "breakable"));
-        itemList = dbh.readFromdb("item", attrList, null);
+        tempList = dbh.readFromdb("item", attrList, null);
         
         attrList.clear();
         
-        for (Object o : itemList) {
-            String[] list = (String[]) o;
-            itemCombo.getItems().add(new Item(Integer.parseInt(list[0]), list[1],
-                    Double.parseDouble(list[2]), Integer.parseInt(list[3]), Boolean.getBoolean(list[4])));
+        for (ArrayList A : tempList) {
+            itemCombo.getItems().add(new Item((int)(A.get(0)), (String)A.get(1),
+                    (double)A.get(2), (int)A.get(3), (boolean)A.get(4)));
         }
     }
 

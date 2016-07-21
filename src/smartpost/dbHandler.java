@@ -26,8 +26,7 @@ public class dbHandler {
 
     static private dbHandler dbh = null;
 
-    private ArrayList tempList = null;
-    private Object[] tempArray;
+    private ArrayList tempList = null, innerList = null;
 
     private final String protocol = "jdbc:sqlite:", dbName = "harkkakanta.db";
 
@@ -37,7 +36,7 @@ public class dbHandler {
 
     private dbHandler() {
         tempList = new ArrayList();
-        tempArray = new String[6];
+        innerList = new ArrayList();
 
         String sDriverName = "org.sqlite.JDBC";
         try {
@@ -111,7 +110,7 @@ public class dbHandler {
         }
     }
     
-    public void writeSmartPostTodb(String postOffice, String avaibility, String address,
+    public void addSmartPostTodb(String postOffice, String avaibility, String address,
             String postalCode, String lat, String lng) {
         /* Adds all SmartPosts to database table "smartPost" */
 
@@ -209,7 +208,7 @@ public class dbHandler {
                 queryS += additionalTerms.get(0);  
                                                             System.out.println(queryS);
                 query = conn.prepareStatement(queryS);
-//                query.setObject(1, additionalTerms.get(1));
+                query.setObject(1, additionalTerms.get(1));
                                                             System.out.println("IF: " + queryS);
 
             } else {              
@@ -227,14 +226,17 @@ public class dbHandler {
 
             } else {
                 int i = 0;
-                attrList.add(attr); //Adding attr back makes Array handling easier.                
+                attrList.add(0, attr); //Adding attr back makes Array handling easier.                
                 while (rs.next()) {
+                    innerList.clear();
                     i = 0;
                     for (String S : attrList) {
-                        tempArray[i] = rs.getObject(attrList.get(i++));
+                        innerList.add(i++, rs.getObject(S));
                     }
-                                                            //System.out.println(tempArray[0] + " " + tempArray[1]);
-                    tempList.add(tempArray.clone());
+                                                           System.out.println("inner:" + innerList);
+                                                           
+                    tempList.add(innerList.clone());
+                                                            System.out.println("temp: " + tempList);
                 }
             }
 
@@ -251,7 +253,7 @@ public class dbHandler {
                 System.err.println(ex1.getMessage());
 
             } finally {
-                tempArray = null;
+                innerList.clear();
                 CloseDB();
 
             }

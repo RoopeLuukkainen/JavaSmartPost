@@ -46,8 +46,8 @@ public class FXMLDocumentController implements Initializable {
 
     XMLparse xml = new XMLparse();
     dbHandler dbh;
-    private ArrayList tempList = new ArrayList();
-    private ArrayList tempList2 = new ArrayList();
+    private ArrayList<ArrayList> tempList = new ArrayList<>();
+    private ArrayList additionalTermList = new ArrayList();
     private ArrayList<String> attrList = new ArrayList<>();
     private ArrayList<String> cityList = new ArrayList<>();
 
@@ -115,22 +115,25 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private void addSmartPostAction(ActionEvent event) {
         //webViewScreen.getEngine().executeScript("document.goToLocation('Skinnarilankatu 34, 53850 Lappeenranta', 'Aukioloaika', 'red')");
-        tempS = " sp JOIN city c ON sp.postalCode = c.postalCode WHERE cityName = 'FORSSA';";
-        tempList2.addAll(Arrays.asList(tempS, smartPostCombo.valueProperty().getValue().toUpperCase()));
+        tempS = " WHERE cityName = ?;";
+        additionalTermList.addAll(Arrays.asList(tempS, smartPostCombo.valueProperty().getValue().toUpperCase()));
 
         dbh = getDbh();
-        attrList.add("*");
-        tempList = dbh.readFromdb("smartPost", attrList, tempList2);
-
+        attrList.addAll(Arrays.asList("smartPostID", "longitude", "latitude", 
+                "smartPostName", "colorOnMap", "postalCode", 
+                "cityName", "streetAddress", "openingTime", "closingTime"));
+        tempList = dbh.readFromdb("smartPostView", attrList, additionalTermList);
+        
+        additionalTermList.clear();
         attrList.clear();
 
 //        if (tempList.size() > 11) {
 //            tempList.subList(0, 10)
 //        }
         int i = 0;
-        for (Object o : tempList) {
-            String[] list = (String[]) o;
-
+        for (ArrayList A : tempList) {
+//            String[] list = (String[]) o;
+            
 //            System.out.println(i++);
 //
 //            try {
@@ -140,7 +143,9 @@ public class FXMLDocumentController implements Initializable {
 //                Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
 //            }
             String script = String.format("document.goToLocation('%s, %s %s', "
-                    + "'Aukioloaika', 'red')", list[0], list[1], smartPostCombo.valueProperty().getValue());
+                    + "'%s', '%s')", A.get(7), A.get(5), 
+                    smartPostCombo.valueProperty().getValue(), (String)A.get(8), ((String)A.get(4)).toLowerCase());
+            System.out.println(script);
             webViewScreen.getEngine().executeScript(script);
         }
 
@@ -200,15 +205,15 @@ public class FXMLDocumentController implements Initializable {
 
     private void addCityToCombo() {
         attrList.add("cityName");
-        tempList = dbh.readFromdb("city", attrList, null);
+        cityList = dbh.readFromdb("city", attrList, null);
 
-        attrList.clear();
+        attrList.clear();        
 
-        Collections.sort(tempList);
+        Collections.sort(cityList);
         
         
 
-        for (Object o : tempList) {                   
+        for (Object o : cityList) {                   
             String s = o.toString().substring(0, 1).toUpperCase()
                     + o.toString().substring(1).toLowerCase();
 
@@ -216,7 +221,7 @@ public class FXMLDocumentController implements Initializable {
                 smartPostCombo.getItems().add(s);
             }
         }
-        tempList.clear();
+        cityList.clear();
 
     }
 
