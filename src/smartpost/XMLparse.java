@@ -9,6 +9,7 @@ package smartpost;
 import java.io.IOException;
 import java.io.StringReader;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +33,8 @@ import org.xml.sax.SAXException;
  */
 public class XMLparse {
     private Document doc;
-    private String city, code;
+    private String city, name, availability, address, code;
+    private float lat, lng;
 
     public XMLparse() {}
     
@@ -58,7 +60,7 @@ public class XMLparse {
     private void parseSmartPostData() {
         NodeList nodes = doc.getElementsByTagName("place");
         
-        dbHandler dbh = dbHandler.getInstance();
+        DBHandler dbh = DBHandler.getInstance();
         
         ComboBox<String> Combo = null;
         
@@ -66,28 +68,17 @@ public class XMLparse {
             Node node = nodes.item(i);
             Element e = (Element)node;
             
-            city = getValue("city", e).toUpperCase();
             code = getValue("code", e);
+            city = getValue("city", e).toUpperCase();
+            address = getValue("address", e);
+            availability = getValue("availability", e);
+            name = getValue("postoffice", e);
+            lat = Float.parseFloat(getValue("lat", e));
+            lng = Float.parseFloat(getValue("lng", e));
             
             dbh.writeCityTodb(code, city);
             
-            dbh.addSmartPostTodb(
-                    getValue("postoffice", e), getValue("availability", e), 
-                    getValue("address", e),code ,
-                    getValue("lat", e), getValue("lng", e)
-            );
-            
-//            Combo = FXMLDocumentController.getSmartPostCombo();
-//            
-//            if (!(Combo.getItems().contains(city.toUpperCase()))) {
-//                    Combo.getItems().add(city.toUpperCase());
-//            }
-            
-//            System.out.printf("%s %s\n"
-//                    + "%s %s %s\n"
-//                    + "lat: %s lng: %s\n\n", getValue("postoffice", e), getValue("availability", e),
-//            getValue("address", e), getValue("code", e), getValue("city", e),
-//            getValue("lat", e), getValue("lng", e));
+            dbh.addSmartPostTodb(name, availability, address, code, lat, lng);            
         }
     }
     

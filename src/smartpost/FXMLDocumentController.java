@@ -45,11 +45,11 @@ import javafx.util.Duration;
 public class FXMLDocumentController implements Initializable {
 
     XMLparse xml = new XMLparse();
-    dbHandler dbh;
-    private ArrayList<ArrayList> tempList = new ArrayList<>();
-    private ArrayList additionalTermList = new ArrayList();
-    private ArrayList<String> attrList = new ArrayList<>();
-    private static ArrayList<String> cityList = new ArrayList<>();
+    DBHandler dbh;
+    private ArrayList<ArrayList> DCtempList = new ArrayList<>();
+    private ArrayList DCadditionalTermList = new ArrayList();
+    private ArrayList<String> DCattrList = new ArrayList<>();
+    private static ArrayList<String> DCcityList = new ArrayList<>();
 
     private FadeTransition fadeIn = new FadeTransition(Duration.millis(500));
 
@@ -108,7 +108,7 @@ public class FXMLDocumentController implements Initializable {
             packageCreator.show();
 
         } catch (IOException ex) {
-            System.out.println("errori paketin avaamisessa.");
+            System.err.println("Error while opening packagecreator.");
             Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -117,22 +117,22 @@ public class FXMLDocumentController implements Initializable {
     private void addSmartPostAction(ActionEvent event) {
         //webViewScreen.getEngine().executeScript("document.goToLocation('Skinnarilankatu 34, 53850 Lappeenranta', 'Aukioloaika', 'red')");
         tempS = " WHERE cityName = ?;";
-        additionalTermList.addAll(Arrays.asList(tempS, smartPostCombo.valueProperty().getValue().toUpperCase()));
+        DCadditionalTermList.addAll(Arrays.asList(tempS, smartPostCombo.valueProperty().getValue().toUpperCase()));
 
         dbh = getDbh();
-        attrList.addAll(Arrays.asList("smartPostID", "longitude", "latitude", 
+        DCattrList.addAll(Arrays.asList("smartPostID", "longitude", "latitude", 
                 "smartPostName", "colorOnMap", "postalCode", 
                 "cityName", "streetAddress", "openingTime", "closingTime"));
-        tempList = dbh.readFromdb("smartPostView", attrList, additionalTermList);
+        DCtempList = dbh.readFromdb("smartPostView", DCattrList, DCadditionalTermList);
         
-        additionalTermList.clear();
-        attrList.clear();
+        DCadditionalTermList.clear();
+        DCattrList.clear();
 
-//        if (tempList.size() > 11) {
-//            tempList.subList(0, 10)
+//        if (DCtempList.size() > 11) {
+//            DCtempList.subList(0, 10)
 //        }
         int i = 0;
-        for (ArrayList A : tempList) {
+        for (ArrayList A : DCtempList) {
 //            String[] list = (String[]) o;
             
 //            System.out.println(i++);
@@ -145,7 +145,8 @@ public class FXMLDocumentController implements Initializable {
 //            }
             String script = String.format("document.goToLocation('%s, %s %s', "
                     + "'%s', '%s')", A.get(7), A.get(5), 
-                    smartPostCombo.valueProperty().getValue(), (String)A.get(8), ((String)A.get(4)).toLowerCase());
+                    smartPostCombo.valueProperty().getValue(), (String)A.get(8),
+                                            ((String)A.get(4)).toLowerCase());
             System.out.println(script);
             webViewScreen.getEngine().executeScript(script);
         }
@@ -182,12 +183,34 @@ public class FXMLDocumentController implements Initializable {
             System.err.println("XML IOError! :(");
         }
     }
+    
+    private void listSmartPost() {
+        smartPostObject sp = new smartPostObject();
+        
+        dbh = getDbh();
+        DCattrList.addAll(Arrays.asList("smartPostID", "longitude", "latitude",
+                "smartPostName", "colorOnMap", "postalCode",
+                "cityName", "streetAddress", "openingTime", "closingTime"));
+        DCtempList = dbh.readFromdb("smartPostView", DCattrList, null);
+
+        DCattrList.clear();
+        
+//SmartPost constructor(id, color, code, city, address, availability, name, lat, lng, drawn)
+        for (ArrayList A : DCtempList) {
+            sp.addToSpList(new smartPostObject((int) A.get(0), (String) A.get(4),
+                    (String)A.get(5), (String) A.get(6), (String) A.get(7),
+                    (String) A.get(9),(String) A.get(3), 
+                    Double.parseDouble(A.get(1).toString()),
+                    Double.parseDouble(A.get(2).toString()), false));
+        }
+    }
 
     @FXML
     private void continueAction(ActionEvent event) {
         startPane.setVisible(false);
         webViewScreen.setVisible(true);
         addCityToCombo();
+        listSmartPost();
     }
 
     @FXML
@@ -197,24 +220,25 @@ public class FXMLDocumentController implements Initializable {
         
         dbh.clearDB();
         loadSmartPostXMLaction();
+        listSmartPost();
     }
 
-    private dbHandler getDbh() {
-        dbh = dbHandler.getInstance();
+    private DBHandler getDbh() {
+        dbh = DBHandler.getInstance();
         return dbh;
     }
 
     private void addCityToCombo() {
-        attrList.add("cityName");
-        cityList = dbh.readFromdb("city", attrList, null);
-        attrList.clear();
+        DCattrList.add("cityName");
+        DCcityList = dbh.readFromdb("city", DCattrList, null);
+        DCattrList.clear();
 
 
-        Collections.sort(cityList);
+        Collections.sort(DCcityList);
         
         
 
-        for (Object o : cityList) {                   
+        for (Object o : DCcityList) {                   
             String s = o.toString().substring(0, 1).toUpperCase()
                     + o.toString().substring(1).toLowerCase();
 
@@ -225,10 +249,10 @@ public class FXMLDocumentController implements Initializable {
     }
 
     static public ArrayList getCityList() {
-        cityList.clear();
-        cityList.addAll(smartPostCombo.getItems());
-        System.out.println("Main:" + cityList);
-        return cityList;
+        DCcityList.clear();
+        DCcityList.addAll(smartPostCombo.getItems());
+        System.out.println("Main:" + DCcityList);
+        return DCcityList;
     }
 
     @FXML

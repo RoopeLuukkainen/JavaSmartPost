@@ -11,14 +11,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
@@ -29,12 +32,14 @@ import javafx.stage.Stage;
  * @author k9751
  */
 public class PackageCreatorFXMLController implements Initializable {
-    dbHandler dbh;
-    private ArrayList<Item> itemList = new ArrayList<>();
-    private ArrayList<ArrayList> tempList = new ArrayList<>();
-    private ArrayList<itemPackage> packageList = new ArrayList<>();
-    private ArrayList<String> attrList = new ArrayList<>();
-    private ArrayList<String> additionalTermList = new ArrayList<>();
+    DBHandler dbh;
+    
+    private ArrayList<Item> PCitemList = new ArrayList<>();
+    private ArrayList<ArrayList> PCtempList = new ArrayList<>();
+    private ArrayList<itemPackage> PCpackageList = new ArrayList<>();
+    private ArrayList<String> PCattrList = new ArrayList<>();
+    private ArrayList<String> PCadditionalTermList = new ArrayList<>();
+    smartPostObject sp = new smartPostObject();
     
     @FXML
     private Button addItemButton;
@@ -69,17 +74,14 @@ public class PackageCreatorFXMLController implements Initializable {
     @FXML
     private TextField itemDepthField;
     @FXML
-    private TableColumn<?, ?> spNameColumn1;
+    private TextArea packageInfoLabel;
     @FXML
-    private TableColumn<?, ?> spAddressColumn1;
+    private TextArea itemInfoLabel;
     @FXML
-    private TableColumn<?, ?> spNameColumn2;
+    private ListView<smartPostObject> destinationList;
     @FXML
-    private TableColumn<?, ?> spAddressColumn2;
-    @FXML
-    private TableView<String> startTable;
-    @FXML
-    private TableView<?> destinationTable;
+    private ListView<smartPostObject> startList;
+
 
     /**
      * Initializes the controller class.
@@ -87,16 +89,18 @@ public class PackageCreatorFXMLController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {        
         dbh = getDbh();
-        attrList.addAll(Arrays.asList("itemID", "itemName", "itemSize", "itemWeight", "breakable"));
-        tempList = dbh.readFromdb("item", attrList, null);
         
-        attrList.clear();
+        PCattrList.addAll(Arrays.asList(
+                "itemID", "itemName", "itemSize", "itemWeight", "breakable"));
+        PCtempList = dbh.readFromdb("item", PCattrList, null);
         
-        for (ArrayList A : tempList) {
+        PCattrList.clear();
+        
+        for (ArrayList A : PCtempList) {
             createItemObject(A);
         }
         
-        addCitiesToList();
+        addCityToList();
     }    
 
     @FXML
@@ -108,46 +112,71 @@ public class PackageCreatorFXMLController implements Initializable {
     private void createItemAction(ActionEvent event) {        
         String itemName = itemNameField.getText();
         
-        double itemSize = Double.parseDouble(itemWidthField.getText()) 
-                * Double.parseDouble(itemHeightField.getText()) 
-                * Double.parseDouble(itemDepthField.getText());
-        
-        int itemWeight = Integer.parseInt(itemWeightField.getText());        
+        try {
+            double itemSize = Double.parseDouble(itemWidthField.getText().replaceAll(",", ".")) 
+                * Double.parseDouble(itemHeightField.getText().replaceAll(",", ".")) 
+                * Double.parseDouble(itemDepthField.getText().replaceAll(",", "."));
+            
+            int itemWeight = Integer.parseInt(itemWeightField.getText());
+
         boolean breakable = breakableToggle.isSelected();
         
         dbh = getDbh();
-        dbh.addItemToDB(itemName, itemSize, itemWeight, breakable);
-       
-        attrList.addAll(Arrays.asList("itemID", "itemName", "itemSize", "itemWeight", "breakable"));
+        dbh.addItemToDB(itemName, itemSize, itemWeight, breakable);    
         
-        additionalTermList.addAll(Arrays.asList(
-                " ORDER BY itemID DESC LIMIT ?", "1")); //Used 2 terms because 
+        PCattrList.addAll(Arrays.asList(
+                "itemID", "itemName", "itemSize", "itemWeight", "breakable"));
         
-        tempList = dbh.readFromdb("item", attrList, additionalTermList);
+        PCadditionalTermList.addAll(Arrays.asList(
+                " ORDER BY itemID DESC LIMIT ?", "1")); //dbHandler requires 2 terms.
         
-        System.out.println(tempList);
-        System.out.println(tempList.get(0));
+        PCtempList = dbh.readFromdb("item", PCattrList, PCadditionalTermList);
         
-        createItemObject(tempList.get(0));
-        tempList.clear();
-        attrList.clear();
-        additionalTermList.clear();
+        createItemObject(PCtempList.get(0));
+        PCtempList.clear();
+        PCattrList.clear();
+        PCadditionalTermList.clear();
+        
+        itemNameField.setText(""); 
+        // inside TRY because only if creating succeess field is emptied.
+        
+        } catch (NumberFormatException ex) {
+            itemInfoLabel.setText("Anna koko ja paino lukuarvoina.\n" +
+                            "Välimerkki desimaaliluvussa voi olla '.' tai ','.");
+        }
+        itemWeightField.setText("");
+        itemHeightField.setText("");
+        itemDepthField.setText("");
+        itemWidthField.setText("");
     }
     
     private void createItemObject(ArrayList A) {
-//        System.out.println(A);
-//        System.out.println(Integer.parseInt(A.get(0).toString()) + "|" + (String)A.get(1) + "|" +
-//                Double.parseDouble(A.get(2).toString()) + "|" + Integer.parseInt(A.get(3).toString()) + "|" + Boolean.parseBoolean(A.get(4).toString()));
-
         itemCombo.getItems().add(new Item(Integer.parseInt(A.get(0).toString()),
                 (String)A.get(1), Double.parseDouble(A.get(2).toString()),
-                Integer.parseInt(A.get(3).toString()),
-                Boolean.parseBoolean(A.get(4).toString())));
+                Double.parseDouble(A.get(3).toString()),
+                Boolean.parseBoolean(A.get(4).toString())));        
     }
     
 
     @FXML
     private void createPackageAction(ActionEvent event) {
+        dbh = getDbh();
+//        dbh.addPackageDeliveryToDB(deliveryType, fromSP, toSP);
+//        
+//        dbh.addPackageToDB(deliveryID, packageSize);
+
+        PCattrList.addAll(Arrays.asList(
+                "itemID", "itemName", "itemSize", "itemWeight", "breakable"));
+
+        PCadditionalTermList.addAll(Arrays.asList(
+                " ORDER BY itemID DESC LIMIT ?", "1")); //dbHandler requires 2 terms.
+
+        PCtempList = dbh.readFromdb("item", PCattrList, PCadditionalTermList);
+
+        createItemObject(PCtempList.get(0));
+        PCtempList.clear();
+        PCattrList.clear();
+        PCadditionalTermList.clear();
     }
     
     @FXML
@@ -156,18 +185,52 @@ public class PackageCreatorFXMLController implements Initializable {
         packageCreator.close();
     }
     
-    private dbHandler getDbh() {
-        dbh = dbHandler.getInstance();
-        return dbh;
-    }
 
-    private void addCitiesToList() {
+    private void addCityToList() {
         startCityCombo.getItems().addAll(FXMLDocumentController.getCityList());
         destinationCityCombo.getItems().addAll(FXMLDocumentController.getCityList());   
     }
 
     @FXML
-    private void refreshTableView(ActionEvent event) {
-        //OPETTELE KÄYTTÄMÄÄN TABLEVIEWIÄ!!!
+    private void refreshListView1(ActionEvent event) {
+        refreshList(startList, startCityCombo);
+    }
+    
+    @FXML
+    private void refreshListView2(ActionEvent event) {
+        refreshList(destinationList, destinationCityCombo);
+    }
+    
+    private void refreshList(ListView L, ComboBox<String> C) {
+        L.getItems().clear();
+        for (smartPostObject SP : sp.getSpList()) {
+
+            if (SP.getCity().equals(C.valueProperty().getValue().toUpperCase())) {
+                L.getItems().add(SP);
+            }
+        }
+    }
+
+    @FXML
+    private void refreshPackageInfoLabel(ActionEvent event) {
+        
+    }
+
+    @FXML
+    private void refreshItemInfoLabel(ActionEvent event) {
+        String s = "Ei särkyvä";
+        Item I = itemCombo.valueProperty().getValue(); 
+        
+        if (I.getBreakable()) { s = "Särkyvä"; }
+        
+        itemInfoLabel.setText(String.format("Esineen tiedot:\n"
+                + "Koko = %.2f dm³ / litraa\n"
+                + "Paino = %.2f kg\n"
+                + "%s", I.getSize()/1000, I.getWeight()/1000, s));
+    }
+    
+    private DBHandler getDbh() {
+        dbh = DBHandler.getInstance();
+        return dbh;
     }
 }

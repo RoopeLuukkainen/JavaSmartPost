@@ -11,16 +11,35 @@ package smartpost;
  * @author k9751
  */
 public abstract class deliveryClass {
-    private int speed, distanceLimit, amountOfTimoteiMen, weightLimit;
+    private int speed;
     
     public deliveryClass() {
-        //MUUTA PACKAGEDELIVERY LUOKAKSI
+        
     }
 }
 
 class deliveryClass1 extends deliveryClass {
+    private int distanceLimit;
     
     public deliveryClass1() {
+        
+    }
+
+}
+
+class deliveryClass2 extends deliveryClass {
+    private int amountOfTimoteiMen;
+    private double emptySizeLimit;
+    
+    public deliveryClass2() {
+        
+    }
+
+}
+
+class deliveryClass3 extends deliveryClass {
+    String stressAction;
+    public deliveryClass3() {
         
     }
 

@@ -11,5 +11,9 @@ package smartpost;
  * @author k9751
  */
 public class itemPackage {
+    private int packageID, deliveryID, size, fromSp, toSp;
     
+    public itemPackage() {
+        
+    }
 }

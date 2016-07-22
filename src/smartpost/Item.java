@@ -12,21 +12,35 @@ package smartpost;
  */
 public class Item {
     private String name;
-    private double size; // size unit cm³
-    private int packageID, ID, weight; // weigth unit g
+    private double size, weight; // size unit cm³ | weigth unit g
+    private int packageID, ID; 
     private boolean breakable;  
     
-    public Item(int ID, String N, double S, int W, boolean B) {
+    public Item(int ID, String N, double S, double W, boolean B) {
         this.ID = ID;
         name = N;
         weight = W;
         size = S;
         breakable = B;
-        System.out.printf("%d, %s, %f, %d, %b", ID, name, (float)S, W, B);
+        System.out.printf("%d, %s, %f, %f, %b", ID, name, (float)S, (float)W, B);
     }
     
     @Override
     public String toString() {
         return name;
     }
+    
+    public boolean getBreakable() {
+        return breakable;
+    }
+    
+    public double getSize() {
+        return size;
+    }
+    
+    public double getWeight() {
+        return weight;
+    }
 }
+
+

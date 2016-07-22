@@ -22,9 +22,9 @@ import java.util.logging.Logger;
  *
  * @author k9751
  */
-public class dbHandler {
+public class DBHandler {
 
-    static private dbHandler dbh = null;
+    static private DBHandler dbh = null;
 
     private ArrayList tempList = null, innerList = null;
 
@@ -34,7 +34,7 @@ public class dbHandler {
     PreparedStatement query;
     ResultSet rs = null;
 
-    private dbHandler() {
+    private DBHandler() {
         tempList = new ArrayList();
         innerList = new ArrayList();
 
@@ -43,42 +43,21 @@ public class dbHandler {
             Class.forName(sDriverName);
 
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(dbHandler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DBHandler.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("ClassNotFound EXCEPTION!!!!");
 
         }
 
     }
 
-    static public dbHandler getInstance() {
+    static public DBHandler getInstance() {
         /* Returns instance to dbHandler object. Uses singleton design pattern */
 
         if (dbh == null) {
-            dbh = new dbHandler();
+            dbh = new DBHandler();
         }
         return dbh;
     }
-
-//    public void writeTodb() {
-//        
-//        try {
-//            conn = DriverManager.getConnection(protocol + dbName);
-//        
-//            query = conn.prepareStatement("INSERT INTO deliveryClass"
-//                            + "('deliveryType', 'speed', 'amountOfTimoteiMen')\n" 
-//                            + "VALUES (2, 70, 2)");
-//            query.execute();
-//            System.out.println("WRITE 1");
-//            query.close();
-//            
-//            conn.close();
-//        
-//        } catch (SQLException ex) {
-//            Logger.getLogger(dbHandler.class.getName()).log(Level.SEVERE, null, ex);
-//            System.out.println("write error 1");
-//            
-//        } 
-//    }
     
     public void writeCityTodb(String pcode, String city) {
         try {
@@ -111,7 +90,7 @@ public class dbHandler {
     }
     
     public void addSmartPostTodb(String postOffice, String avaibility, String address,
-            String postalCode, String lat, String lng) {
+            String postalCode, float lat, float lng) {
         /* Adds all SmartPosts to database table "smartPost" */
 
         try {
@@ -128,8 +107,8 @@ public class dbHandler {
             query.setString(3, avaibility);// TO DATE MUOTOON!!
             query.setString(4, address);
             query.setString(5, postalCode);
-            query.setFloat(6, Float.parseFloat(lat));
-            query.setFloat(7, Float.parseFloat(lng));
+            query.setFloat(6, lat);
+            query.setFloat(7, lng);
 
             query.execute();
 
@@ -140,6 +119,67 @@ public class dbHandler {
             try {
                 conn.rollback();
                 System.err.println("Adding SmartPost transaction is rolled back!");
+
+            } catch (SQLException ex1) {
+                System.err.println(ex1.getMessage());
+            }
+
+        } finally {
+            CloseDB();
+        }
+    }
+    
+    public void addPackgeDelivery (int deliveryType, int fromSP, int toSP) {
+        try {
+            conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
+
+            query = conn.prepareStatement("INSERT INTO packageDelivery"
+                    + "('deliveryType', 'fromSp', 'toSP') VALUES (?, ?, ?)");
+
+            query.setInt(1, deliveryType);
+            query.setInt(2, fromSP);
+            query.setInt(3, toSP);
+
+            query.execute();
+
+            conn.commit();
+
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+            try {
+                conn.rollback();
+                System.err.println("Add packageDelivery transaction is rolled back!");
+
+            } catch (SQLException ex1) {
+                System.err.println(ex1.getMessage());
+            }
+
+        } finally {
+            CloseDB();
+        }
+    }
+    
+    public void addPackageToDB(int deliveryID, double size) {
+        try {
+            conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
+
+            query = conn.prepareStatement("INSERT INTO package"
+                    + "('deliveryID', 'packageSize') VALUES (?, ?)");
+
+            query.setInt(1, deliveryID);
+            query.setDouble(2, size);
+
+            query.execute();
+
+            conn.commit();
+
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+            try {
+                conn.rollback();
+                System.err.println("Add package transaction is rolled back!");
 
             } catch (SQLException ex1) {
                 System.err.println(ex1.getMessage());
@@ -239,7 +279,7 @@ public class dbHandler {
             attrList.clear();
 
         } catch (SQLException ex) {
-            Logger.getLogger(dbHandler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DBHandler.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("DB reading error.");
             try {
                 conn.rollback();
@@ -273,7 +313,7 @@ public class dbHandler {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(dbHandler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DBHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
