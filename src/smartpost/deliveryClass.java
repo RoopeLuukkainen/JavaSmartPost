@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package smartpost;
+package timotei;
 
 /**
  *
@@ -13,34 +13,35 @@ package smartpost;
 public abstract class deliveryClass {
     private int speed;
     
-    public deliveryClass() {
-        
+    public deliveryClass(int s) {
+        speed = s;
     }
 }
 
 class deliveryClass1 extends deliveryClass {
     private int distanceLimit;
     
-    public deliveryClass1() {
-        
+    public deliveryClass1(int s, int dl) {
+        super(s);
+        distanceLimit = dl;
     }
-
 }
 
 class deliveryClass2 extends deliveryClass {
     private int amountOfTimoteiMen;
     private double emptySizeLimit;
     
-    public deliveryClass2() {
-        
+    public deliveryClass2(int s, int m, double el) {
+        super(s);
+        amountOfTimoteiMen = m;
+        emptySizeLimit = el;
     }
-
 }
 
 class deliveryClass3 extends deliveryClass {
     String stressAction;
-    public deliveryClass3() {
-        
+    public deliveryClass3(int s, String sa) {
+        super(s);
+        stressAction = sa;
     }
-
 }

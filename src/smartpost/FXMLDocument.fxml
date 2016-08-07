@@ -10,7 +10,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="smartpost.FXMLDocumentController">
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="timotei.FXMLDocumentController">
    <children>
       <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -101,6 +101,7 @@
                               <Button fx:id="createPackageButton" layoutX="10.0" layoutY="25.0" mnemonicParsing="false" onAction="#startPackageCreator" prefHeight="25.0" prefWidth="147.0" text="Luo paketti" />
                               <Button layoutX="10.0" layoutY="55.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="147.0" text="Lähetä paketti" />
                               <ComboBox layoutX="165.0" layoutY="25.0" prefHeight="85.0" prefWidth="126.0" />
+                              <Button fx:id="deletePackageButton" layoutX="10.0" layoutY="85.0" mnemonicParsing="false" onAction="#deletePackageAction" prefHeight="25.0" prefWidth="147.0" text="Poista paketti" />
                            </children>
                         </AnchorPane>
                      </children>

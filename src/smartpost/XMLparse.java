@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package smartpost;
+package timotei;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -76,6 +76,7 @@ public class XMLparse {
             lat = Float.parseFloat(getValue("lat", e));
             lng = Float.parseFloat(getValue("lng", e));
             
+//            System.out.println(code +" "+ city +" "+ address);
             dbh.writeCityTodb(code, city);
             
             dbh.addSmartPostTodb(name, availability, address, code, lat, lng);            

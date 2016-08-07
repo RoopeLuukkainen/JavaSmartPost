@@ -3,8 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-package smartpost;
+package timotei;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,9 +13,9 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author k9751
+ * @author xr00p
  */
-public class SmartPost extends Application {
+public class TIMOTEI extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {

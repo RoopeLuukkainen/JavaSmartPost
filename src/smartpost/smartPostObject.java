@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package smartpost;
+package timotei;
 
 import java.util.ArrayList;
 
@@ -41,8 +41,8 @@ public class smartPostObject {
         longitude = lng;
         drawn = d;
         
-        System.out.println(this.ID + "|" + postalCode + "|" + city +"|"+
-                address +"|"+ availability +"|"+ name + "|"+ latitude +"|"+ longitude + "|" + drawn);
+//        System.out.println(this.ID + "|" + postalCode + "|" + city +"|"+
+//                address +"|"+ availability +"|"+ name + "|"+ latitude +"|"+ longitude + "|" + drawn);
     }
     
     public ArrayList<smartPostObject> getSpList() {
@@ -59,6 +59,14 @@ public class smartPostObject {
     
     public String getCity() {
         return city;
+    }
+    
+    public int getID() {
+        return this.ID;
+    }
+    
+    public String getName() {
+        return name;
     }
     
     @Override

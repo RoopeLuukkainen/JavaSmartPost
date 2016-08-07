@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package smartpost;
+package timotei;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -90,18 +90,29 @@ public class DBHandler {
     }
     
     public void addSmartPostTodb(String postOffice, String avaibility, String address,
-            String postalCode, float lat, float lng) {
+            String postalCode, float lat, float lng, String color) {
         /* Adds all SmartPosts to database table "smartPost" */
 
         try {
             conn = DriverManager.getConnection(protocol + dbName);
             conn.setAutoCommit(false);
-
+            
+            if (color == null) {
             query = conn.prepareStatement("INSERT INTO smartPost"
                     + "('smartPostName', 'openingTime', 'closingTime', "
                     + "'streetAddress', 'postalCode', 'latitude', 'longitude')"
                     + "VALUES (?, ?, ?, ?, ?, ?, ?)");
-
+            
+            } else {
+                query = conn.prepareStatement("INSERT INTO smartPost"
+                        + "('smartPostName', 'openingTime', 'closingTime', "
+                        + "'streetAddress', 'postalCode', 'latitude', 'longitude',"
+                        + "colorOnMap)"
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                
+                query.setString(8, color);
+            }
+            
             query.setString(1, postOffice);
             query.setString(2, avaibility);// MUUUUTAAA
             query.setString(3, avaibility);// TO DATE MUOTOON!!
@@ -109,6 +120,7 @@ public class DBHandler {
             query.setString(5, postalCode);
             query.setFloat(6, lat);
             query.setFloat(7, lng);
+
 
             query.execute();
 
@@ -129,7 +141,36 @@ public class DBHandler {
         }
     }
     
-    public void addPackgeDelivery (int deliveryType, int fromSP, int toSP) {
+    public void addBreakTypeToDB(String t, int p) {
+        try {
+            conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
+
+            query = conn.prepareStatement("INSERT INTO breakTypes"
+                    + "('btype', 'percent') VALUES (?, ?)");
+
+            query.setString(1, t.toLowerCase());
+            query.setInt(2, p);
+            query.execute();
+
+            conn.commit();
+
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+            try {
+                conn.rollback();
+                System.err.println("Add breakType transaction is rolled back!");
+
+            } catch (SQLException ex1) {
+                System.err.println(ex1.getMessage());
+            }
+
+        } finally {
+            CloseDB();
+        }
+    }
+    
+    public void addPackageDeliveryToDB (int deliveryType, int fromSP, int toSP) {
         try {
             conn = DriverManager.getConnection(protocol + dbName);
             conn.setAutoCommit(false);
@@ -188,21 +229,53 @@ public class DBHandler {
         } finally {
             CloseDB();
         }
-    }
+    }    
 
-    public void addItemToDB(String N, double S, int W, boolean B) {
+    public void addItemTypeToDB(String N, double S, int W, boolean B, int T) {
         try {
             conn = DriverManager.getConnection(protocol + dbName);
             conn.setAutoCommit(false);
 
-            query = conn.prepareStatement("INSERT INTO item"
-                    + "('itemName', 'itemSize', 'itemWeight', 'breakable')"
-                    + "VALUES (?, ?, ?, ?)");
+            query = conn.prepareStatement("INSERT INTO itemType"
+                    + "('itemName', 'itemSize', 'itemWeight', 'breakable', 'breakType')"
+                    + "VALUES (?, ?, ?, ?, ?)");
 
             query.setString(1, N);
             query.setDouble(2, S);
             query.setInt(3, W);
             query.setBoolean(4, B);
+            query.setInt(5, T);
+
+            query.execute();
+
+            conn.commit();
+
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+            try {
+                conn.rollback();
+                System.err.println("Add itemType transaction is rolled back!");
+
+            } catch (SQLException ex1) {
+                System.err.println(ex1.getMessage());
+            }
+
+        } finally {
+            CloseDB();
+        }
+    }
+    
+    public void addItemToDB(int T, int P) {
+        try {
+            conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
+
+            query = conn.prepareStatement("INSERT INTO itemInPackage"
+                    + "('itemTypeID', 'packageID')"
+                    + "VALUES (?, ?)");
+
+            query.setInt(1, T);
+            query.setInt(2, P);
 
             query.execute();
 
@@ -222,10 +295,42 @@ public class DBHandler {
             CloseDB();
         }
     }
+    
+    public void addDeliversToDB(int dID, int tID, double D) {
+        try {
+            conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
+
+            query = conn.prepareStatement("INSERT INTO delivers"
+                    + "('deliveryID', 'TIMOTEI_ID', 'distance')"
+                    + "VALUES (?, ?, ?)");
+
+            query.setInt(1, dID);
+            query.setInt(2, tID);
+            query.setDouble(3, D);
+
+            query.execute();
+
+            conn.commit();
+
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+            try {
+                conn.rollback();
+                System.err.println("Add delivers transaction is rolled back!");
+
+            } catch (SQLException ex1) {
+                System.err.println(ex1.getMessage());
+            }
+
+        } finally {
+            CloseDB();
+        }
+    }
 
     public ArrayList readFromdb(String table, ArrayList<String> attrList, ArrayList additionalTerms) {
     /* Read given attributes from given table. Returns ArrayList of values if 
-        there is multiple attributes given each row is as array in ArrayList. */
+        there is multiple attributes given, each row is as ArrayList in ArrayList. */
 
         try {
             conn = DriverManager.getConnection(protocol + dbName);
@@ -247,13 +352,20 @@ public class DBHandler {
                 queryS += additionalTerms.get(0);  
                                                             
                 query = conn.prepareStatement(queryS);
-                query.setObject(1, additionalTerms.get(1));
-                                                            System.out.println("IF: " + queryS);
+                
+                if (additionalTerms.get(1) != null) {
+                    query.setObject(1, additionalTerms.get(1));
+                }
+                
+                if (additionalTerms.size() == 3)
+                    query.setObject(2, additionalTerms.get(2));
+                                                            System.out.print("IF: " + queryS);
+                                                            System.out.println(" | additionalterm: " + additionalTerms.get(1));
             } else {              
                 query = conn.prepareStatement(queryS);  
                                                             System.out.println("ELSE: " +queryS);
             }
-
+                                                            
             rs = query.executeQuery();
 
             if (attrList.isEmpty()) {
@@ -263,7 +375,7 @@ public class DBHandler {
                 }
 
             } else {
-                int i = 0;
+                int i;
                 attrList.add(0, attr); //Adding attr back makes Array handling easier.                
                 while (rs.next()) {
                     innerList.clear();
@@ -280,7 +392,7 @@ public class DBHandler {
 
         } catch (SQLException ex) {
             Logger.getLogger(DBHandler.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("DB reading error.");
+            System.err.println("DB reading error.");
             try {
                 conn.rollback();
                 System.err.println("Reading from DB transaction is rolled back!");
@@ -294,6 +406,68 @@ public class DBHandler {
             }
         }
         return tempList;
+    }
+    
+    public void updateDB(String table, String attr, Object newValue,
+            String whereAttr, Object whereValue) {
+        try {
+            conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
+
+            String queryS = "UPDATE " + table + " SET " + attr + 
+                    " = ? WHERE " + whereAttr + " = ?";
+            query = conn.prepareStatement(queryS);
+
+            query.setObject(1, newValue);
+            query.setObject(2, whereValue);
+
+            query.execute();
+
+            conn.commit();
+
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+            try {
+                conn.rollback();
+                System.err.println("Update transaction is rolled back!");
+
+            } catch (SQLException ex1) {
+                System.err.println(ex1.getMessage());
+            }
+
+        } finally {
+            CloseDB();
+        }
+    }
+    
+    public void deleteFromDB(String table, String whereAttr, Object whereValue) {
+        try {
+            conn = DriverManager.getConnection(protocol + dbName);
+            conn.setAutoCommit(false);
+
+            String queryS = "DELETE FROM " + table + 
+                    " WHERE " + whereAttr + " = ?";
+            query = conn.prepareStatement(queryS);
+
+            query.setObject(1, whereValue);
+
+            query.execute();
+
+            conn.commit();
+
+        } catch (SQLException ex) {
+            System.err.println(ex.getMessage());
+            try {
+                conn.rollback();
+                System.err.println("Delete transaction is rolled back!");
+
+            } catch (SQLException ex1) {
+                System.err.println(ex1.getMessage());
+            }
+
+        } finally {
+            CloseDB();
+        }
     }
 
     public void CloseDB() {
@@ -329,7 +503,9 @@ public class DBHandler {
             while (rs.next()) {
                 table = rs.getString(3);
                 System.out.println(table);
-                if (table.contains("View"))
+                if (table.contains("View") || table.contains("deliveryClass") || 
+                        table.contains("breakTypes") || table.contains("TIMOTEI_man")
+                        || table.contains("stressActions"))
                     continue;
                 query = conn.prepareStatement("DELETE FROM " + rs.getString(3) + ";");
                 

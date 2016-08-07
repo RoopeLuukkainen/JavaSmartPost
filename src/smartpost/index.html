@@ -42,17 +42,33 @@
     };
   }
  
-  document.goToLocation = function goToLocation(searchString, infoString, color) {
-    document.geocoder.geocode( {'address': searchString}, function(results, status) {
-      if (status === google.maps.GeocoderStatus.OK) {
+  document.goToLocation = function goToLocation(lat, lng, infoString, color) {
         var icon = 'http://maps.google.com/mapfiles/ms/icons/' + color + '-dot.png';//'https://pin.net.au/open-graph-image.png'; 
         var marker = new google.maps.Marker({            
+          map: document.map,
+          position: new google.maps.LatLng(lat, lng),
+          icon: icon
+        });       
+        
+        var info = new google.maps.InfoWindow({
+          content: infoString
+        });
+
+        google.maps.event.addListener(marker, "click", function() {
+          info.open(document.map, marker);
+        });
+        markers.push(marker);
+  };
+  
+  document.goToOwnLocation = function goToOwnLocation(searchString, infoString, color) {
+    document.geocoder.geocode( {'address': searchString}, function(results, status) {
+      if (status === google.maps.GeocoderStatus.OK) {
+        var icon = 'http://maps.google.com/mapfiles/ms/icons/' + color + '-dot.png';
+        var marker = new google.maps.Marker({
           map: document.map,
           position: results[0].geometry.location,
           icon: icon
         });
-        markers.push(marker);
-        
         var info = new google.maps.InfoWindow({
           content: infoString
         });
@@ -67,16 +83,9 @@
     });
   };
 
-  document.deleteMarkers = function deleteMarkers() {
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
-    }
-
-  };
-
   document.createPath = function createPath(pathArray, pathColor, speed) {
-    var src = new google.maps.LatLng(pathArray[0], pathArray[1]);
-    var dest = new google.maps.LatLng(pathArray[2], pathArray[3]);
+    var src = new google.maps.LatLng(pathArray[0], pathArray[1]); //Start LAT, LNG
+    var dest = new google.maps.LatLng(pathArray[2], pathArray[3]); //End LAT, LNG
     var path = new google.maps.MVCArray();
     var service = new google.maps.DirectionsService();
     var poly = new google.maps.Polyline({map: document.map, strokeColor: pathColor});
@@ -102,6 +111,12 @@
     setTimeout(function() {
       path.push(loc);
     }, speed * 100 * i);
+  };
+  
+  document.routeLenght = function routeLenght(pathGeo) {
+    var start = new google.maps.LatLng(pathGeo[0], pathGeo[1]);
+    var destination = new google.maps.LatLng(pathGeo[2], pathGeo[3]);
+    return Math.round(google.maps.geometry.spherical.computeLength([start, destination])/1000 * 100) / 100;
   };
 
   document.deletePaths = function deletePaths() {
