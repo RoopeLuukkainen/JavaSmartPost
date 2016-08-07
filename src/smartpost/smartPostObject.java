@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package smartpost;
+package timotei;
 
 import java.util.ArrayList;
 
@@ -16,14 +16,14 @@ public class smartPostObject {
     static private ArrayList <smartPostObject> spList = new ArrayList<>();
     
     private String color, postalCode, city, address, availability, name;
-    private double latitude, longitude;
+    private float latitude, longitude;
     private boolean drawn;
     private int ID;
     
     public smartPostObject(){}
     
     public smartPostObject(int ID, String co, String p, String c, String a, 
-            String av, String n, double lat, double lng, boolean d) {        
+            String av, String n, float lat, float lng, boolean d) {        
         try {
             name = n.split(",")[1]; /* XML format is following
             <postoffice>Pakettiautomaatti, Kauppakeskus Sello</postoffice> 
@@ -45,7 +45,7 @@ public class smartPostObject {
 //                address +"|"+ availability +"|"+ name + "|"+ latitude +"|"+ longitude + "|" + drawn);
     }
     
-    public ArrayList<smartPostObject> getSpList() {
+    static public ArrayList<smartPostObject> getSpList() {
         return spList;
     }
     
@@ -67,6 +67,22 @@ public class smartPostObject {
     
     public String getName() {
         return name;
+    }
+    
+    public boolean getDrawn() {
+        return drawn;
+    }
+    
+    public void setDrawn(boolean b) {
+        drawn = b;
+    }
+
+    public float getLatitude() {
+        return latitude;
+    }
+
+    public float getLongitude() {
+        return longitude;
     }
     
     @Override

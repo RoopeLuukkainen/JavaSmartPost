@@ -4,44 +4,38 @@
  * and open the template in the editor.
  */
 
-package smartpost;
+package timotei;
 
 /**
  *
  * @author k9751
  */
-public abstract class deliveryClass {
-    private int speed;
-    
-    public deliveryClass(int s) {
-        speed = s;
-    }
+public abstract class deliveryClass {    
+    public deliveryClass() {}
 }
 
 class deliveryClass1 extends deliveryClass {
     private int distanceLimit;
     
-    public deliveryClass1(int s, int dl) {
-        super(s);
+    public deliveryClass1(int dl) {
+        super();
         distanceLimit = dl;
     }
 }
 
 class deliveryClass2 extends deliveryClass {
     private int amountOfTimoteiMen;
-    private double emptySizeLimit;
+    private int emptySizeLimit; //percent
     
-    public deliveryClass2(int s, int m, double el) {
-        super(s);
+    public deliveryClass2(int m, int el) {
+        super();
         amountOfTimoteiMen = m;
         emptySizeLimit = el;
     }
 }
 
 class deliveryClass3 extends deliveryClass {
-    String stressAction;
-    public deliveryClass3(int s, String sa) {
-        super(s);
-        stressAction = sa;
+    public deliveryClass3() {
+        super();
     }
 }
