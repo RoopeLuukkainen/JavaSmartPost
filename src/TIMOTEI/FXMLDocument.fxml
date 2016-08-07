@@ -9,21 +9,6 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="timotei.FXMLDocumentController">
    <children>
-      <Pane fx:id="startPane" blendMode="DARKEN" prefHeight="390.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <children>
-            <AnchorPane prefHeight="451.0" prefWidth="604.0">
-               <children>
-                  <Button fx:id="startNoButton" layoutX="218.0" layoutY="241.0" mnemonicParsing="false" onAction="#continueAction" prefHeight="50.0" prefWidth="100.0" text="Ei" AnchorPane.rightAnchor="110.0" AnchorPane.topAnchor="200.0" />
-                  <Button fx:id="startYesButton" layoutX="112.0" layoutY="214.0" mnemonicParsing="false" onAction="#clearDBaction" prefHeight="50.0" prefWidth="100.0" text="Kyllä" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="200.0" />
-                  <Label alignment="TOP_CENTER" layoutX="12.0" layoutY="151.0" maxHeight="30.0" minHeight="30.0" minWidth="-Infinity" prefHeight="30.0" prefWidth="405.0" text="Nollataanko tietokanta?" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
-                     <font>
-                        <Font name="Times New Roman Bold" size="25.0" />
-                     </font>
-                  </Label>
-               </children>
-            </AnchorPane>
-         </children>
-      </Pane>
       <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="150.0" percentWidth="100.0" prefWidth="100.0" />
@@ -199,5 +184,20 @@
             </AnchorPane>
          </children>
       </GridPane>
+      <Pane fx:id="startPane" blendMode="DARKEN" prefHeight="390.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane prefHeight="451.0" prefWidth="604.0">
+               <children>
+                  <Button fx:id="startNoButton" layoutX="218.0" layoutY="241.0" mnemonicParsing="false" onAction="#continueAction" prefHeight="50.0" prefWidth="100.0" text="Ei" AnchorPane.rightAnchor="110.0" AnchorPane.topAnchor="200.0" />
+                  <Button fx:id="startYesButton" layoutX="112.0" layoutY="214.0" mnemonicParsing="false" onAction="#clearDBaction" prefHeight="50.0" prefWidth="100.0" text="Kyllä" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="200.0" />
+                  <Label alignment="TOP_CENTER" layoutX="12.0" layoutY="151.0" maxHeight="30.0" minHeight="30.0" minWidth="-Infinity" prefHeight="30.0" prefWidth="405.0" text="Nollataanko tietokanta?" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+                     <font>
+                        <Font name="Times New Roman Bold" size="25.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+         </children>
+      </Pane>
    </children>
 </AnchorPane>

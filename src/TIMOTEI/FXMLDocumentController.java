@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package timotei;
+package TIMOTEI;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -70,8 +70,6 @@ public class FXMLDocumentController implements Initializable {
     static private WebView webViewScreen;
     @FXML
     private Button addSmartPostButton;
-    @FXML
-    private MenuItem loadXML;
     @FXML
     static private ComboBox<String> smartPostCombo;
     @FXML
