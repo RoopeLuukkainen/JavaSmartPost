@@ -8,6 +8,7 @@ package timotei;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -341,9 +342,12 @@ public class FXMLDocumentController implements Initializable {
     private void deletePackageAction(ActionEvent event) {
         /* Button action to delete package. */
         
-        try {
+        try {            
             int pID = deliveryCombo.valueProperty().getValue().getPackageID();
-            deleteItemsAndPackage(pID);
+            writeLog("Paketti: "
+                    + deliveryCombo.getSelectionModel().getSelectedItem().toString()
+                    + " poistettu.");
+            deleteItemsAndPackage(pID);            
             
         } catch (NullPointerException ex) {
             writeLog("Ei valittuna poistettavaa pakettia.");
@@ -374,11 +378,7 @@ public class FXMLDocumentController implements Initializable {
         
         if (C.getItems().contains(deliveryCombo.getSelectionModel().getSelectedItem())) {
             C.getItems().remove(deliveryCombo.getSelectionModel().getSelectedItem());
-        }
-        
-        writeLog("Paketti: " + 
-                deliveryCombo.getSelectionModel().getSelectedItem().toString()
-                + " poistettu.");
+        }        
         
         deliveryCombo.getItems().remove(deliveryCombo.getSelectionModel().getSelectedItem());
     }
@@ -450,6 +450,7 @@ public class FXMLDocumentController implements Initializable {
                 }
                 
                 checkBreaking(T, P, deliveryClass);
+                deleteItemsAndPackage(P.getPackageID());
             }
         
         } catch (NullPointerException ex) {
@@ -497,7 +498,7 @@ public class FXMLDocumentController implements Initializable {
         if (dClass == 3 || T.getStressLevel() > T.getStressLimit()) {
             breakPercent += 25;
             s += String.format("%s %s suoritti stressinpurku "
-                    + "toimenpiteen", T.getFirstName(), T.getFamilyName());
+                    + "toimenpiteen: ", T.getFirstName(), T.getFamilyName());
             
             breakPercent -= (weight/1000); //1 kg lowers break chance by 1%.
 
@@ -517,14 +518,15 @@ public class FXMLDocumentController implements Initializable {
             if (DCtempList.size() != 1 && ((String)B.get(1)).equals("special")) {
                 breakPercent += 50;
                 randInt = rand.nextInt(100);
-                
+                                                                    System.out.println(randInt + " |IF| " + breakPercent);
                 if (randInt < breakPercent) {
                     s += "Esine " + B.get(0) + " särkyi matkalla.\n";
                 }
                 breakPercent -= 50;
             
-            } else if ((boolean) B.get(3)) {                
+            } else if ((int)B.get(3) == 1) {                                                                  
                 randInt = rand.nextInt(100);
+                                                                    System.out.println(randInt + " |ELSE IF| " + breakPercent);
                 
                 if (randInt < breakPercent) {
                     s += "Esine " + B.get(0) + " särkyi matkalla.\n";
@@ -532,8 +534,8 @@ public class FXMLDocumentController implements Initializable {
             }
         }
         
-        if (s.equals("")) {
-            s = "Kaikki esineet pysyivät ehjänä.";
+        if (!(s.contains("särkyi"))) {
+            s += "Kaikki esineet pysyivät ehjänä.";
         }
         
         DCtempList.clear();
@@ -677,9 +679,10 @@ public class FXMLDocumentController implements Initializable {
     }
     
     static public double getRouteLenght(ArrayList A) {
-        double lenght = (double) webViewScreen.getEngine().
-                executeScript("document.routeLenght(" + A + ")");
-        return lenght;
+            double lenght = Double.parseDouble(webViewScreen.getEngine().
+                    executeScript("document.routeLenght(" + A + ")").toString());
+            return lenght;
+
     }
     
     static public void writeLog(String s) {

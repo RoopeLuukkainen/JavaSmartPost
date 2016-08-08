@@ -10,6 +10,7 @@ import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,6 +56,7 @@ public class PackageCreatorFXMLController implements Initializable {
     
     private ArrayList<Item> PCitemList = new ArrayList<>(); //List of all items
     private ArrayList<ArrayList> PCtempList = new ArrayList<>(); 
+    private ArrayList<ArrayList> PCtempList2 = new ArrayList<>(); 
     private ArrayList<Integer> PCidList = new ArrayList<>();
     private ArrayList<itemPackage> PCpackageList = new ArrayList<>(); // List of all packages
     private ArrayList<String> PCattrList = new ArrayList<>();   //List for dbreader attributes
@@ -153,6 +155,8 @@ public class PackageCreatorFXMLController implements Initializable {
         }
         
         PCtempList.clear();
+        
+        
 
         PCattrList.addAll(Arrays.asList(
                 "packageID", "deliveryID", "packageSize", "from_ID", "to_ID", 
@@ -160,13 +164,19 @@ public class PackageCreatorFXMLController implements Initializable {
         PCtempList = dbh.readFromdb("packageView", PCattrList, null);
         
         PCattrList.clear();
-        
-        for (ArrayList A : PCtempList) {
-            createPackageObject((int)A.get(0), (int)A.get(1), 
-            Float.parseFloat(A.get(2).toString()),(int)A.get(3), (int)A.get(4),
-            (String)A.get(5), (String)A.get(6), (int)A.get(7));
-        }
+        PCtempList2.addAll(PCtempList); //To avoid ConcurrentModificationException
         PCtempList.clear();
+        
+        for (ArrayList A : PCtempList2) {
+            createPackageObject(A);
+        }
+        
+//        for (ArrayList A : PCtempList) {
+//            createPackageObject((int)A.get(0), (int)A.get(1), 
+//            Float.parseFloat(A.get(2).toString()),(int)A.get(3), (int)A.get(4),
+//            (String)A.get(5), (String)A.get(6), (int)A.get(7));
+//        }
+        PCtempList2.clear();
         
         itemInfoLabel.setText(
                 "Tavallinen esine, ei riko eikä suojaa muita esineitä.\n"
@@ -181,7 +191,13 @@ public class PackageCreatorFXMLController implements Initializable {
         fadeIn.setAutoReverse(false); //true goes also back to beginning
         
 
-    }    
+    }
+    
+    private void createPackageObject(ArrayList A) {
+        createPackageObject((int) A.get(0), (int) A.get(1),
+            Float.parseFloat(A.get(2).toString()), (int) A.get(3), (int) A.get(4),
+            (String) A.get(5), (String) A.get(6), (int) A.get(7));
+    }
 
     @FXML
     private void addItemAction(ActionEvent event) {
@@ -590,9 +606,9 @@ int pID, int dID, double s, int fromID, int toID, String fromSP, String toSP */
                 i++;
                 
             } else {    
-                    s += "\n" + ++i + "x " + temp;
+                    s += "\n" + i + "x " + temp;
                     temp = stringCombiner(A);
-                    i = 0;
+                    i = 1;
             }
         }
         
