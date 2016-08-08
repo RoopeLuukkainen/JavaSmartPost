@@ -76,6 +76,7 @@
         google.maps.event.addListener(marker, "click", function() {
           info.open(document.map, marker);
         });
+        markers.push(marker);
         alert(i);
       } else {
         alert("Geocode was not successful for the following reason: " + status);
@@ -123,7 +124,13 @@
     for(var i=0; i<polyMarkerArray.length;i++) {
       polyMarkerArray[i].setMap(null);
     }
-} 
+};
+    
+    document.deleteMarkers = function deleteMarkers() {
+    for(var i=0; i<markers.length;i++) {
+      marker[i].setMap(null);
+    }
+}; 
 </script>
 </head>
 <body onload="initialize()">
