@@ -436,6 +436,16 @@ public class FXMLDocumentController implements Initializable {
                 writeLog("Paketti lähetetty: " + P.toString()+ "\n"
                         + "Matkan pituus on " + l + " km.");
                 
+                String tMan = "Pakettia kuljettaa " + T.getFirstName() 
+                        + " " + T.getFamilyName();
+                
+                if (deliveryClass == 2) {
+                    writeLog(tMan + " ja Pikku Apulainen auttaa.");
+                
+                } else {
+                    writeLog(tMan);
+                }
+                
                 checkBreaking(T, P, deliveryClass);
             }
         
