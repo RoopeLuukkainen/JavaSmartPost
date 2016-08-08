@@ -595,8 +595,6 @@ int pID, int dID, double s, int fromID, int toID, String fromSP, String toSP */
                     i = 0;
             }
         }
-        if (i == 0)
-            i++;
         
         s += "\n" + i + "x " + temp;
         

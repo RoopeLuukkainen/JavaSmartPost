@@ -211,8 +211,11 @@ public class FXMLDocumentController implements Initializable {
                         (String)A.get(8), ((String)A.get(4)).toLowerCase());
 
             webViewScreen.getEngine().executeScript(script);
-            writeLog("SmartPost automaatit piirretty kohteeseen: " + (String)A.get(6));
+            
         }
+        // Get first smartPost's city name.
+        writeLog("SmartPost automaatit piirretty kohteeseen: " + (String) DCtempList.get(0).get(6)); 
+        DCtempList.clear();
     }
 
     private void loadSmartPostXMLaction() {
