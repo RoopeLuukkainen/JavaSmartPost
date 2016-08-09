@@ -119,6 +119,8 @@ public class FXMLDocumentController implements Initializable {
     private Pane addLocationErrorPane;
     @FXML
     static private TextArea logTextArea;
+    @FXML
+    private Button deletePathButton;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {        
@@ -337,6 +339,13 @@ public class FXMLDocumentController implements Initializable {
             SP.setDrawn(false);
         }
     }
+    
+    @FXML
+    private void deletePathAction(ActionEvent event) {
+        /* Delete drawn paths from webView. */
+        webViewScreen.getEngine().executeScript("document.deletePaths()");
+    }
+
 
     @FXML
     private void deletePackageAction(ActionEvent event) {
@@ -698,5 +707,6 @@ public class FXMLDocumentController implements Initializable {
         dbh = DBHandler.getInstance();
         return dbh;
     }
+
 
 }

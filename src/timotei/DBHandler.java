@@ -442,7 +442,7 @@ public class DBHandler {
                 CloseDB();
 
             }
-        }
+        } catch (IndexOutOfBoundsException ex) {}
         return tempList;
     }
     
