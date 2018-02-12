@@ -1,7 +1,8 @@
+Added short description at the beginning of the file
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Summer 2016
+ * Object-Oriented Programming -course
+ * Package Creator FXML controller -class
  */
 
 package timotei;
@@ -40,7 +41,7 @@ import javafx.util.Duration;
 /**
  * FXML Controller class
  *
- * @author k9751
+ * @author Roope Luukkainen
  */
 public class PackageCreatorFXMLController implements Initializable {
     DBHandler dbh;
