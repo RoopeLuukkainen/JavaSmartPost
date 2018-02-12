@@ -1,8 +1,9 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Summer 2016
+ * Object-Oriented Programming -course
+ * TIMOTEI (main) -file
  */
+ 
 package timotei;
 
 import javafx.application.Application;
@@ -13,7 +14,7 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author k9751
+ * @author Roope Luukkainen
  */
 public class TIMOTEI extends Application {
     
