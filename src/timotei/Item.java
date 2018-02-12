@@ -1,14 +1,14 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Summer 2016
+ * Object-Oriented Programming -course
+ * Item -class
  */
 
 package timotei;
 
 /**
  *
- * @author k9751
+ * @author Roope Luukkainen
  */
   public abstract class Item {
     protected String name;
