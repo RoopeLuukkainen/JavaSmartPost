@@ -1,4 +1,3 @@
-Added short description at the beginning of the file
 /*
  * Summer 2016
  * Object-Oriented Programming -course
