@@ -1,7 +1,8 @@
+Added short description at the beginning of the file
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Summer 2016
+ * Object-Oriented Programming -course
+ * XML parser -class
  */
 
 package timotei;
@@ -28,7 +29,7 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author k9751
+ * @author Roope Luukkainen
  */
 public class XMLparse {
     private Document doc;
