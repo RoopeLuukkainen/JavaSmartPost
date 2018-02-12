@@ -1,7 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Summer 2016
+ * Object-Oriented Programming -course
+ * item package -class
  */
 
 package timotei;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 /**
  *
- * @author k9751
+ * @author Roope Luukkainen
  */
 public class itemPackage {
     private String fromSP, toSP, packageString;
